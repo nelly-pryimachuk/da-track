@@ -1,16 +1,36 @@
-# React + Vite
+# DA Track
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-сайт портфоліо для відстеження прогресу у вивченні дата-аналітики.
 
-Currently, two official plugins are available:
+Поточний результат: головна сторінка з каталогом навичок (SQL, Excel, Power BI).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Середовище
 
-## React Compiler
+Node.js: v24.21.0
+npm: 11.19.0
+Git: 2.55.0
+Docker: 29.8.0, Docker Compose: v5.5.1
+Основний варіант: A (Windows, стандартні інсталятори)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Запуск
 
-## Expanding the ESLint configuration
+Нативно: `npm install`, потім `npm run dev`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Docker:
+docker compose build
+docker compose run --rm web npm install
+docker compose up
+
+Адреса Docker: http://localhost:5173.
+Зупинення контейнера: `Ctrl+C`, видалення: `docker compose down`.
+
+## Збірка
+npm run build
+
+Або: `docker compose run --rm web npm run build`
+
+## План
+
+Див. [docs/project-plan.md](docs/project-plan.md).
+
+Маршрутизація, форми та CRUD-операції ще заплановані.
