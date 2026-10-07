@@ -1,6 +1,7 @@
 import AppLayout from './components/layout/AppLayout.jsx'
-import HomePage from './pages/HomePage.jsx'
-import CasePage from './pages/CasePage.jsx'
+import SkillSelectionProvider from './providers/SkillSelectionProvider.jsx'
+import SkillsContainer from './pages/SkillsContainer.jsx'
+import CaseContainer from './pages/CaseContainer.jsx'
 import { skills } from './data/skills.js'
 
 const navigationLinks = [
@@ -10,12 +11,12 @@ const navigationLinks = [
 ]
 
 export default function App() {
-  const exampleSkill = skills.find((item) => item.id === 'skill-002')
-
   return (
     <AppLayout title="DA Track" links={navigationLinks}>
-      <HomePage />
-      <CasePage skill={exampleSkill} />
+      <SkillSelectionProvider items={skills}>
+        <SkillsContainer items={skills} />
+        <CaseContainer />
+      </SkillSelectionProvider>
     </AppLayout>
   )
 }

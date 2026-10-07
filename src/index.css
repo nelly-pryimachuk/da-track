@@ -87,3 +87,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   outline: 3px solid #075a94;
   outline-offset: 3px;
 }
+.selection-note { font-weight: 600; }
+button[aria-pressed="true"] {
+  outline: 2px solid #172b3a;
+  outline-offset: 3px;
+}
