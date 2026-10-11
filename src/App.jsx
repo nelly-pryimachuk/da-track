@@ -1,22 +1,44 @@
+import { Route, Routes } from 'react-router'
 import AppLayout from './components/layout/AppLayout.jsx'
-import SkillSelectionProvider from './providers/SkillSelectionProvider.jsx'
+import CasesLayout from './components/layout/CasesLayout.jsx'
+import HomePage from './pages/HomePage.jsx'
 import SkillsContainer from './pages/SkillsContainer.jsx'
-import CaseContainer from './pages/CaseContainer.jsx'
+import SkillDetailsPage from './pages/SkillDetailsPage.jsx'
+import CasesPage from './pages/CasesPage.jsx'
+import CaseCreatePage from './pages/CaseCreatePage.jsx'
+import CaseEditPage from './pages/CaseEditPage.jsx'
+import NotFoundPage from './pages/NotFoundPage.jsx'
 import { skills } from './data/skills.js'
-
-const navigationLinks = [
-  { href: '#about', label: 'Про мене' },
-  { href: '#skills', label: 'Навички' },
-  { href: '#new-case', label: 'Новий кейс' },
-]
+import { cases } from './data/cases.js'
 
 export default function App() {
   return (
-    <AppLayout title="DA Track" links={navigationLinks}>
-      <SkillSelectionProvider items={skills}>
-        <SkillsContainer items={skills} />
-        <CaseContainer />
-      </SkillSelectionProvider>
-    </AppLayout>
+    <Routes>
+      <Route element={<AppLayout items={skills} />}>
+        <Route index element={<HomePage />} />
+
+        <Route path="skills">
+          <Route index element={<SkillsContainer items={skills} />} />
+          <Route
+            path=":skillId"
+            element={<SkillDetailsPage items={skills} />}
+          />
+        </Route>
+
+        <Route path="cases" element={<CasesLayout />}>
+          <Route
+            index
+            element={<CasesPage cases={cases} items={skills} />}
+          />
+          <Route path="new" element={<CaseCreatePage items={skills} />} />
+          <Route
+            path=":caseId/edit"
+            element={<CaseEditPage cases={cases} items={skills} />}
+          />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   )
 }

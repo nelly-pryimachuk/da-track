@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { useState } from 'react'
 import StatusBadge from './StatusBadge.jsx'
 import AppButton from '../ui/AppButton.jsx'
@@ -8,7 +9,11 @@ export default function SkillCard({ item, selected, onSelect }) {
 
   return (
     <article className="skill-card">
-      <h3>{item.name}</h3>
+      <h3>
+        <Link to={`/skills/${encodeURIComponent(item.id)}`}>
+          {item.name}
+        </Link>
+      </h3>
       <p className="category">{item.category}</p>
       <p><StatusBadge status={item.status} /></p>
 

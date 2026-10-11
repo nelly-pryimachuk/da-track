@@ -1,11 +1,11 @@
-import HomePage from './HomePage.jsx'
+import SkillsPage from './SkillsPage.jsx'
 import useSkillSelection from '../hooks/useSkillSelection.js'
 
 export default function SkillsContainer({ items }) {
   const { selectedId, selectSkill } = useSkillSelection()
 
   return (
-    <HomePage
+    <SkillsPage
       items={items}
       selectedId={selectedId}
       onSelect={selectSkill}
