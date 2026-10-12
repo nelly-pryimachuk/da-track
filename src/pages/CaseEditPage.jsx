@@ -1,43 +1,50 @@
 import { useNavigate, useParams } from 'react-router'
+import useCases from '../hooks/useCases.js'
 import CasePage from './CasePage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
-export default function CaseEditPage({ cases, items }) {
+export default function CaseEditPage({ items }) {
   const { caseId } = useParams()
   const navigate = useNavigate()
+  const { cases, updateCase } = useCases()
 
-  const savedCase = cases.find((entry) => entry.id === caseId)
+  const record = cases.find((entry) => entry.id === caseId)
 
-  if (!savedCase) {
+  if (!record) {
     return (
       <NotFoundPage
-        title="Кейс не знайдено"
+        title="Кейс для редагування не знайдено"
         message="Перевірте ідентифікатор кейсу в адресі."
       />
     )
   }
 
-  const skill = items.find((entry) => entry.id === savedCase.skillId)
+  const detailsPath = `/cases/${encodeURIComponent(record.id)}`
 
-  if (!skill) {
-    return (
-      <NotFoundPage
-        title="Навичка кейсу відсутня"
-        message="Демонстраційний запис посилається на навичку, якої немає в переліку."
-      />
-    )
+  function handleSave(input) {
+    const result = updateCase(record.id, input)
+    if (result.ok) {
+      navigate(detailsPath, { replace: true })
+    }
+    return result
   }
 
   return (
     <CasePage
-      key={`edit-${savedCase.id}`}
-      title={`Редагування кейсу ${savedCase.id}`}
-      skill={skill}
+      key={`edit-${record.id}`}
+      title={`Редагування: ${record.title}`}
+      skills={items}
       initialDraft={{
-        title: savedCase.title,
-        summary: savedCase.summary,
+        skillIds: record.skillIds,
+        title: record.title,
+        summary: record.summary,
+        hoursSpent: record.hoursSpent,
+        readyToPublish: record.readyToPublish,
+        link: record.link,
       }}
-      onCancel={() => navigate('/cases')}
+      onSave={handleSave}
+      submitLabel="Зберегти зміни"
+      onCancel={() => navigate(detailsPath)}
     />
   )
 }

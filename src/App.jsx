@@ -9,7 +9,7 @@ import CaseCreatePage from './pages/CaseCreatePage.jsx'
 import CaseEditPage from './pages/CaseEditPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 import { skills } from './data/skills.js'
-import { cases } from './data/cases.js'
+import CaseDetailsPage from './pages/CaseDetailsPage.jsx'
 
 export default function App() {
   return (
@@ -26,15 +26,10 @@ export default function App() {
         </Route>
 
         <Route path="cases" element={<CasesLayout />}>
-          <Route
-            index
-            element={<CasesPage cases={cases} items={skills} />}
-          />
+          <Route index element={<CasesPage items={skills} />} />
           <Route path="new" element={<CaseCreatePage items={skills} />} />
-          <Route
-            path=":caseId/edit"
-            element={<CaseEditPage cases={cases} items={skills} />}
-          />
+          <Route path=":caseId" element={<CaseDetailsPage items={skills} />} />
+          <Route path=":caseId/edit" element={<CaseEditPage items={skills} />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

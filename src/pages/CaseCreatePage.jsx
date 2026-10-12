@@ -1,40 +1,21 @@
-import { Link, useNavigate, useSearchParams } from 'react-router'
-import PageHeading from '../components/ui/PageHeading.jsx'
-import EmptyState from '../components/ui/EmptyState.jsx'
+import { useNavigate, useSearchParams } from 'react-router'
 import useSkillSelection from '../hooks/useSkillSelection.js'
+import useCases from '../hooks/useCases.js'
 import CasePage from './CasePage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 
 export default function CaseCreatePage({ items }) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { selectedId, clearSelection } = useSkillSelection()
+  const { clearSelection } = useSkillSelection()
+  const { createCase } = useCases()
 
   const skillId = searchParams.get('skillId')
+  const skill = skillId === null
+    ? null
+    : items.find((entry) => entry.id === skillId)
 
-  if (skillId === null) {
-    const lastSelectionSearch = selectedId
-      ? `?${new URLSearchParams({ skillId: selectedId })}`
-      : null
-
-    return (
-      <>
-        <PageHeading title="Новий кейс" />
-        <EmptyState title="Спочатку виберіть навичку.">
-          <p><Link to="/skills">Відкрити навички</Link></p>
-          {lastSelectionSearch && (
-            <p>
-              <Link to={lastSelectionSearch}>Використати останній вибір</Link>
-            </p>
-          )}
-        </EmptyState>
-      </>
-    )
-  }
-
-  const skill = items.find((entry) => entry.id === skillId)
-
-  if (!skill) {
+  if (skillId !== null && !skill) {
     return (
       <NotFoundPage
         title="Неможливо підготувати кейс"
@@ -43,16 +24,36 @@ export default function CaseCreatePage({ items }) {
     )
   }
 
+  function handleSave(input) {
+    const result = createCase(input)
+    if (result.ok) {
+      navigate(`/cases/${encodeURIComponent(result.record.id)}`, {
+        replace: true,
+      })
+    }
+    return result
+  }
+
   function handleCancel() {
     clearSelection()
-    navigate('/skills', { replace: true })
+    navigate('/cases', { replace: true })
   }
 
   return (
     <CasePage
-      key={`new-${skill.id}`}
+      key={`new-${skillId ?? 'none'}`}
       title="Новий кейс"
-      skill={skill}
+      skills={items}
+      initialDraft={{
+        skillIds: skill ? [skill.id] : [],
+        title: '',
+        summary: '',
+        hoursSpent: '',
+        readyToPublish: false,
+        link: '',
+      }}
+      onSave={handleSave}
+      submitLabel="Створити кейс"
       onCancel={handleCancel}
       cancelLabel="Скасувати чернетку й очистити вибір"
     />
