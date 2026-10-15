@@ -34,11 +34,21 @@
 
 ### Зберігання
 
-Кейси живуть у пам'яті запущеного застосунку (`CasesProvider`). Після
-перезавантаження сторінки відновлюються початкові записи з `src/data/cases.js`.
+Кейси читаються й записуються через сервіс `caseService`. У режимі `mock`
+(основний) вони зберігаються в localStorage браузера під ключем
+`daTrack.cases.v1` і доступні після перезавантаження сторінки в межах того
+самого origin. Початкові записи з `src/data/cases.js` використовуються лише
+тоді, коли ключ відсутній. Режим `api` підготовлено, але з реальним сервером
+не перевірено.
 
-## Реалізовано в Л1.1
-- Каталог навичок (SQL, Excel, Power BI) на головній сторінці.
+## Реалізовано
+
+- Л1.1: каталог навичок (SQL, Excel, Power BI) на головній сторінці.
+- Л1.2: компоненти інтерфейсу й спільна оболонка.
+- Л2.1: стан, Context API, `useEffect`.
+- Л2.2: маршрутизація, фільтри в URL.
+- Л3.1: форми, валідація, CRUD кейсів.
+- Л3.2: сервіс даних, mock із localStorage, API-адаптер, асинхронні операції.
 
 ## Карта маршрутів (Л3.1)
 
@@ -47,7 +57,7 @@
 | `/` | HomePage | немає | не застосовується |
 | `/skills` | SkillsContainer → SkillsPage | `data/skills.js`; `?q=`, `?practicing=1` | порожній результат фільтра |
 | `/skills/:skillId` | SkillDetailsPage | навичка за `skillId` | NotFoundPage |
-| `/cases` | CasesPage | колекція `CasesProvider`; `?q=`, `?skill=`, `?sort=` | порожня колекція / порожній результат |
+| `/cases` | CasesPage | знімок кейсів у `CasesProvider` (джерело: `caseService`); `?q=`, `?skill=`, `?sort=` | завантаження; помилка з повтором; порожня колекція / порожній результат |
 | `/cases/new` | CaseCreatePage | порожня форма; `?skillId=` лише попередньо відмічає навичку | невідомий `skillId`: NotFoundPage |
 | `/cases/:caseId` | CaseDetailsPage | кейс за `caseId` | NotFoundPage |
 | `/cases/:caseId/edit` | CaseEditPage | кейс за `caseId` | NotFoundPage |

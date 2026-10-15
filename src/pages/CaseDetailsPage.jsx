@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import AppButton from '../components/ui/AppButton.jsx'
@@ -9,9 +9,25 @@ import NotFoundPage from './NotFoundPage.jsx'
 export default function CaseDetailsPage({ items }) {
   const { caseId } = useParams()
   const navigate = useNavigate()
-  const { cases } = useCases()
+  const { cases, isMutating } = useCases()
   const deleteWithConfirmation = useDeleteCase()
   const [error, setError] = useState('')
+  const pageAlive = useRef(false)
+  const activeId = useRef(caseId)
+
+  useEffect(() => {
+    pageAlive.current = true
+    return () => {
+      pageAlive.current = false
+    }
+  }, [])
+
+  useEffect(() => {
+    activeId.current = caseId
+    return () => {
+      activeId.current = null
+    }
+  }, [caseId])
 
   const record = cases.find((entry) => entry.id === caseId)
 
@@ -22,9 +38,11 @@ export default function CaseDetailsPage({ items }) {
     skill: items.find((entry) => entry.id === id),
   }))
 
-  function handleDelete() {
+  async function handleDelete() {
+    if (isMutating) return
     setError('')
-    const result = deleteWithConfirmation(record)
+    const result = await deleteWithConfirmation(record)
+    if (!pageAlive.current || activeId.current !== record.id) return
     if (result.ok) navigate('/cases', { replace: true })
     else if (!result.cancelled) setError(result.message)
   }
@@ -63,10 +81,9 @@ export default function CaseDetailsPage({ items }) {
           Редагувати кейс
         </Link>
       </p>
-      <AppButton variant="secondary" onClick={handleDelete}>
+      <AppButton variant="secondary" onClick={handleDelete} disabled={isMutating}>
         Видалити кейс
       </AppButton>
-      <p><Link to="/cases">До всіх кейсів</Link></p>
-    </>
+      <p role="status">{isMutating ? 'Опрацювання зміни…' : ''}</p>    </>
   )
 }

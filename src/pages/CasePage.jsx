@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PageHeading from '../components/ui/PageHeading.jsx'
 import Section from '../components/ui/Section.jsx'
 import AppButton from '../components/ui/AppButton.jsx'
@@ -54,6 +54,16 @@ export default function CasePage({
   const [touched, setTouched] = useState({})
   const [attempted, setAttempted] = useState(false)
   const [operationError, setOperationError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const submitting = useRef(false)
+  const alive = useRef(false)
+
+  useEffect(() => {
+    alive.current = true
+    return () => {
+      alive.current = false
+    }
+  }, [])
 
   const validation = validateCase(draft, skills)
   const errors = Object.fromEntries(
@@ -72,8 +82,9 @@ export default function CasePage({
     setTouched((previous) => ({ ...previous, [field]: true }))
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    if (submitting.current) return
     setAttempted(true)
     setOperationError('')
 
@@ -85,15 +96,26 @@ export default function CasePage({
       return
     }
 
-    const result = onSave(validation.value)
-    if (!result.ok) {
-      setOperationError(
-        result.message || Object.values(result.errors ?? {}).join(' '),
-      )
+    submitting.current = true
+    setIsSubmitting(true)
+
+    try {
+      const result = await onSave(validation.value)
+      if (!result.ok && alive.current) {
+        setOperationError(
+          result.message || Object.values(result.errors ?? {}).join(' '),
+        )
+      }
+    } catch {
+      if (alive.current) setOperationError('Не вдалося завершити збереження.')
+    } finally {
+      submitting.current = false
+      if (alive.current) setIsSubmitting(false)
     }
   }
 
   function handleReset() {
+    if (submitting.current) return
     if (!isDirty) return
     if (!window.confirm('Відкинути введені зміни та відновити початкові поля?')) {
       return
@@ -105,6 +127,7 @@ export default function CasePage({
   }
 
   function handleCancel() {
+    if (submitting.current) return
     if (isDirty && !window.confirm('Вийти та відкинути незбережені зміни?')) {
       return
     }
@@ -126,11 +149,11 @@ export default function CasePage({
           onSubmit={handleSubmit}
           onReset={handleReset}
           submitLabel={submitLabel}
-        />
+          isSubmitting={isSubmitting}        
+          />
         <CaseSummary skills={skills} draft={draft} />
       </Section>
-      <AppButton variant="secondary" onClick={handleCancel}>
-        {cancelLabel}
+      <AppButton variant="secondary" onClick={handleCancel} disabled={isSubmitting}>        {cancelLabel}
       </AppButton>
     </>
   )

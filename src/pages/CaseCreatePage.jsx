@@ -3,13 +3,21 @@ import useSkillSelection from '../hooks/useSkillSelection.js'
 import useCases from '../hooks/useCases.js'
 import CasePage from './CasePage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
+import { useEffect, useRef } from 'react'
 
 export default function CaseCreatePage({ items }) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { clearSelection } = useSkillSelection()
   const { createCase } = useCases()
+  const pageAlive = useRef(false)
 
+  useEffect(() => {
+    pageAlive.current = true
+    return () => {
+      pageAlive.current = false
+    }
+  }, [])
   const skillId = searchParams.get('skillId')
   const skill = skillId === null
     ? null
@@ -24,9 +32,9 @@ export default function CaseCreatePage({ items }) {
     )
   }
 
-  function handleSave(input) {
-    const result = createCase(input)
-    if (result.ok) {
+  async function handleSave(input) {
+    const result = await createCase(input)
+    if (result.ok && pageAlive.current) {
       navigate(`/cases/${encodeURIComponent(result.record.id)}`, {
         replace: true,
       })

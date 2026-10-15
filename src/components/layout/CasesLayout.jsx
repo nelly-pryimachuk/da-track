@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router'
 import CaseNotice from '../cases/CaseNotice.jsx'
+import CasesGate from '../cases/CasesGate.jsx'
 
 export default function CasesLayout() {
   return (
@@ -10,9 +11,11 @@ export default function CasesLayout() {
           <li><NavLink to="new">Новий кейс</NavLink></li>
         </ul>
       </nav>
-      <p>Локальні дані зберігаються до перезавантаження сторінки.</p>
+      <p>Кейси зберігаються в локальному сховищі цього браузера.</p>
       <CaseNotice />
-      <Outlet />
+      <CasesGate>
+        <Outlet />
+      </CasesGate>
     </>
   )
 }

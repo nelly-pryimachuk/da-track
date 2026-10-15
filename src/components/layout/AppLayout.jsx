@@ -16,7 +16,7 @@ export default function AppLayout({ items }) {
       <SiteHeader title="DA Track" links={navigationLinks} />
       <main id="main-content" tabIndex={-1}>
         <SkillSelectionProvider items={items}>
-          <CasesProvider items={items}>
+          <CasesProvider>
             <Outlet />
           </CasesProvider>
         </SkillSelectionProvider>

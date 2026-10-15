@@ -12,6 +12,7 @@ export default function CaseForm({
   onSubmit,
   onReset,
   submitLabel,
+  isSubmitting,
 }) {
   const skillsId = `${idPrefix}-skills`
   const titleId = `${idPrefix}-title`
@@ -33,8 +34,10 @@ export default function CaseForm({
   }
 
   return (
-    <form noValidate onSubmit={onSubmit} aria-label="Форма кейсу">
-      <p>
+    <form noValidate onSubmit={onSubmit} aria-label="Форма кейсу" aria-busy={isSubmitting}>      
+    <fieldset disabled={isSubmitting} className="form-fieldset">
+    <legend>Дані кейсу</legend>
+    <p>
         Збережіть зміни кнопкою нижче. Незбережене введення зникає
         при виході зі сторінки або її перезавантаженні.
       </p>
@@ -168,11 +171,12 @@ export default function CaseForm({
       </div>
 
       <div className="form-actions">
-        <AppButton type="submit">{submitLabel}</AppButton>
-        <AppButton variant="secondary" onClick={onReset}>
+        <AppButton type="submit">{isSubmitting ? 'Збереження…' : submitLabel}</AppButton>        <AppButton variant="secondary" onClick={onReset}>
           Відновити початкові поля
         </AppButton>
       </div>
+      </fieldset>
+      <p role="status">{isSubmitting ? 'Збереження кейсу…' : ''}</p>
     </form>
   )
 }

@@ -131,3 +131,7 @@ legend { font-weight: 600; padding-inline: 0.25rem; }
   background: white;
 }
 .case-item h3 { margin-top: 0; }
+[role="alert"] {
+  color: #b42318;
+  font-weight: 600;
+}
