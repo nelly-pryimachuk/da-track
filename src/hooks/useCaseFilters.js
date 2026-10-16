@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router'
+import { selectCases } from '../domain/selectCases.js'
 
 export default function useCaseFilters(cases, skills) {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -8,22 +9,8 @@ export default function useCaseFilters(cases, skills) {
   const skillId = skills.some((skill) => skill.id === rawSkill) ? rawSkill : 'all'
   const rawSort = searchParams.get('sort')
   const sort = ['hours-asc', 'hours-desc'].includes(rawSort) ? rawSort : 'title'
-  const normalizedQuery = query.trim().toLocaleLowerCase('uk')
-
-  const visibleCases = cases.filter((record) => {
-    const text = `${record.title} ${record.summary}`.toLocaleLowerCase('uk')
-    const matchesSkill = skillId === 'all' || record.skillIds.includes(skillId)
-    return text.includes(normalizedQuery) && matchesSkill
-  })
-
-  visibleCases.sort((a, b) => {
-    let order
-    if (sort === 'hours-asc') order = a.hoursSpent - b.hoursSpent
-    else if (sort === 'hours-desc') order = b.hoursSpent - a.hoursSpent
-    else order = a.title.localeCompare(b.title, 'uk')
-    return order || a.id.localeCompare(b.id)
-  })
-
+  const visibleCases = selectCases(cases, { query, skillId, sort })
+  
   function setParameter(name, value, defaultValue, replace = false) {
     const next = new URLSearchParams(searchParams)
     if (value === defaultValue) next.delete(name)
