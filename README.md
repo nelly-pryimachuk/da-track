@@ -30,10 +30,27 @@ docker compose up
 
 ```
 npm run lint
+npm run test:run
 npm run build
+npm run preview
 ```
 
-Або: `docker compose run --rm web npm run build`
+`npm run preview` подає зібраний `dist/` на http://localhost:4173. Це інший origin, ніж у `npm run dev` (5173), тому localStorage там окремий: на початку з'являться початкові кейси. Результат збірки (`dist/`) у Git не додається.
+
+У Docker: `docker compose run --rm web npm run build`.
+
+## Тести
+
+Використано Vitest, React Testing Library і user-event (середовище jsdom). `npm run test` запускає тести в режимі спостереження, `npm run test:run` виконує один завершений запуск.
+
+| Рівень | Файл | Що перевіряється |
+|---|---|---|
+| Логіка | `src/domain/caseValidation.test.js`, `selectCases.test.js` | правила полів із граничними значеннями, пошук, фільтр, сортування |
+| Компонент | `src/pages/CasePage.test.jsx` | некоректна форма, блокування повторного подання, збереження введення після відмови |
+| Інтеграція клієнта | `src/App.integration.test.jsx` | справжні маршрути, провайдер і форма з підміненим `caseService`: завантаження, помилка з повтором, порожній список, невідомі адреси, створення, редагування, видалення |
+| Адаптер | `src/services/apiCaseService.test.js` | HTTP-статуси, відповідь 204, несумісна структура, мережева відмова (підмінений `fetch`) |
+
+Тести не доводять працездатність реального API: сервера немає, перевірено лише поведінку клієнта й адаптера на підмінених відповідях.
 
 ## Що реалізовано
 
@@ -56,3 +73,4 @@ npm run build
 
 - [docs/project-plan.md](docs/project-plan.md): тема, сутності, правила полів, карта маршрутів.
 - [docs/component-architecture.md](docs/component-architecture.md): компоненти, стан, маршрутизація, форми, шар даних.
+- [docs/readiness.md](docs/readiness.md): перелік готовності, сценарій показу, відомі обмеження.
